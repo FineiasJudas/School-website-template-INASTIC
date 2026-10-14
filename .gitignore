@@ -1,0 +1,38 @@
+# dependências
+node_modules/
+.pnpm-store/
+
+# builds
+.next/
+dist/
+out/
+.turbo/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Prisma — clientes gerados no build, nunca versionados
+apps/api/src/generated/
+
+# segredos — NUNCA versionar. Só os .env.example entram no git
+.env
+.env.*
+!.env.example
+ecosystem.config.cjs
+
+# uploads e dados locais
+uploads/
+/backups/
+*.dump
+dump-*.sql
+*.dump
+*.zip
+*.bak
+*.backup
+
+# sistema / editores
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json

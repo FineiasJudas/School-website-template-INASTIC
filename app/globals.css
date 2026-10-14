@@ -1,0 +1,13 @@
+@tailwind base; @tailwind components; @tailwind utilities;
+:root{--color-1:#000000;--color-2:#FFFFFF;--color-3:rgb(39, 150, 202);--color-4:#d7e74ac9;--color-5:#A0A0A0;--color-6:#145078;--color-7:#50A014;--color-8:#00143C;--color-9:#143C50;--color-10:#141414;--color-11:#288CDC;--color-12:#143C64;--color-13:#141400;--color-14:#001428;--color-15:#141428;--color-16:#28A0F0;--edx-dark:#00262B;--edx-cream:#F2F0EB;--edx-pink:#E8A9C8;}
+html{scroll-behavior:smooth} body{@apply bg-cream text-coal font-sans antialiased}
+h1,h2,h3{@apply font-display font-bold tracking-tight}
+:focus-visible{outline:3px solid var(--color-3);outline-offset:2px}
+.hscroll{@apply flex gap-5 overflow-x-auto snap-x snap-mandatory pb-4 -mx-5 px-5;scrollbar-width:thin}
+.hscroll>*{@apply snap-start shrink-0}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+@keyframes marquee{to{transform:translateX(-33.3333%)}}
+.marquee{animation:marquee 50s linear infinite}
+.marquee-wrap:hover .marquee{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.marquee{animation:none}.marquee-wrap{overflow-x:auto!important}}
