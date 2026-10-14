@@ -1,9 +1,9 @@
 'use client';
-import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion, useScroll, useTransform } from 'motion/react';
 import { Reveal, Button, Card, Photo, Counter, Carousel, BgIcon, Marquee } from './ui';
 import Image from 'next/image';
-import { GraduationCap, Laptop } from 'lucide-react';
+import { GraduationCap, Laptop, ChevronLeft, ChevronRight, Award, Lightbulb, Users, Briefcase } from 'lucide-react';
 import Logo from './Logo';
 import { stats, formats, courses, certs, alumni, schoolOffers, staff } from '@/lib/data';
 
@@ -89,21 +89,47 @@ const Slant = ({ children, img, flush }: { children: React.ReactNode; img: strin
     <Reveal x={140} className={flush ? 'md:-mr-5' : ''}><div style={{ clipPath: 'polygon(14% 0, 100% 0, 86% 100%, 0 100%)' }}>
       <Photo src={img} alt="INASTIC" className="min-h-[20rem] w-full md:min-h-[30rem]" pos="50% 40%" /></div></Reveal></div>;
 
+// Slides do hero: imagem, mensagem comercial e um botão. 'chips' mostra os valores com ícones.
+const slides = [
+  { img: '/hero.jpg', pos: '50% 50%', title: 'Aprenda tecnologia. Construa o seu futuro.',
+    text: 'Cursos, certificações e licenciaturas em TI, com docentes da indústria e projectos reais.', cta: ['Conhecer os cursos', '#cursos'] },
+  { img: '/young-woman-studying-library.jpg', pos: '50% 35%', title: 'Aulas práticas, desde o primeiro dia.',
+    text: 'Laboratórios modernos, horários flexíveis e acompanhamento de perto até ao primeiro emprego.', cta: ['Candidatar-se', '#contacto'] },
+  { img: '/74336.jpg', pos: '50% 50%', title: 'Valores que nos guiam.',
+    text: 'Formamos pessoas preparadas para o mercado e para Angola.', cta: ['Quem somos', '#sobre'],
+    chips: [[Award, 'Excelência'], [Lightbulb, 'Inovação'], [Users, 'Inclusão'], [Briefcase, 'Empregabilidade']] },
+  { img: '/boy-studying-peacefully-library.jpg', pos: '50% 40%', title: 'Escolas e INASTIC, lado a lado.',
+    text: 'Currículos de TI, formação de professores e parcerias para o ensino médio e superior.', cta: ['Propor parceria', '#escolas'] },
+] as const;
+
 export function Hero() {
   const ref = useRef(null); const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
   const y = useTransform(scrollYProgress, [0, 1], ['0%', '30%']); const fade = useTransform(scrollYProgress, [0, .8], [1, 0]);
-  const words = 'Instituto Nacional Superior de Tecnologias de Informação e Comunicação'.split(' ');
-  return <section ref={ref} className="relative flex min-h-[92vh] items-end overflow-hidden bg-night pt-24 text-paper">
-    <motion.div style={{ y }} initial={{ scale: 1.25 }} animate={{ scale: 1.05 }} transition={{ duration: 2.2, ease: 'easeOut' }} className="absolute inset-0">
-      <Photo src="/hero.jpg" alt="Campus do INASTIC" className="h-full w-full" /></motion.div>
-    <div className="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-night/20" />
-    <motion.div style={{ opacity: fade }} className="relative mx-auto w-full max-w-6xl px-5 pb-20">
-      <h1 className="max-w-3xl text-5xl md:text-7xl">{words.map((w, i) => <span key={i} className="mr-3 inline-block overflow-hidden align-top">
-        <motion.span className="inline-block" initial={{ y: '110%' }} animate={{ y: 0 }} transition={{ duration: .7, delay: .3 + i * .07, ease: [.22, 1, .36, 1] }}>{w}</motion.span></span>)}</h1>
-      <motion.p initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.1, duration: .7 }} className="mt-6 max-w-2xl text-lg text-paper/90">
-        O INASTIC forma profissionais em programação, dados, redes e cibersegurança, e trabalha com escolas do ensino médio e superior em Angola.</motion.p>
-      <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.3, duration: .7 }} className="mt-8">
-        <Button href="#cursos">Conhecer os cursos</Button></motion.div></motion.div></section>;
+  const [i, setI] = useState(0); const [hover, setHover] = useState(false);
+  useEffect(() => { if (hover) return; const t = setTimeout(() => setI(n => (n + 1) % slides.length), 6000); return () => clearTimeout(t); }, [i, hover]);
+  const go = (d: number) => setI(n => (n + d + slides.length) % slides.length);
+  const s = slides[i]; const H = i === 0 ? 'h1' : 'h2';
+  return <section ref={ref} aria-roledescription="carousel" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+    className="relative flex min-h-[92vh] items-end overflow-hidden bg-night pt-24 text-paper">
+    <motion.div style={{ y }} className="absolute inset-0"><AnimatePresence initial={false}>
+      <motion.div key={i} className="absolute inset-0" initial={{ opacity: 0, scale: 1.2 }} animate={{ opacity: 1, scale: 1.04 }} exit={{ opacity: 0 }}
+        transition={{ opacity: { duration: 1.2 }, scale: { duration: 7, ease: 'easeOut' } }}>
+        <Photo src={s.img} alt="" className="h-full w-full" pos={s.pos} /></motion.div></AnimatePresence></motion.div>
+    <div className="absolute inset-0 bg-gradient-to-t from-night via-night/40 to-night/20" />
+    <motion.div style={{ opacity: fade }} className="relative mx-auto w-full max-w-6xl px-5 pb-12">
+      <AnimatePresence mode="wait"><motion.div key={i} exit={{ opacity: 0, y: -20 }} transition={{ duration: .3 }}>
+        <H className="max-w-3xl text-5xl md:text-7xl">{s.title.split(' ').map((w, k) => <span key={k} className="mr-3 inline-block overflow-hidden align-top">
+          <motion.span className="inline-block" initial={{ y: '110%' }} animate={{ y: 0 }} transition={{ duration: .7, delay: .15 + k * .07, ease: [.22, 1, .36, 1] }}>{w}</motion.span></span>)}</H>
+        <motion.p initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .7, duration: .7 }} className="mt-6 max-w-2xl text-lg text-paper/90">{s.text}</motion.p>
+        {'chips' in s && <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .85, duration: .7 }} className="mt-6 flex flex-wrap gap-3">
+          {s.chips.map(([Icon, l]) => <span key={l} className="inline-flex items-center gap-2 rounded-full bg-paper/15 px-4 py-2 backdrop-blur"><Icon className="h-4 w-4 text-sky" />{l}</span>)}</motion.div>}
+        <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1, duration: .7 }} className="mt-8">
+          <Button href={s.cta[1]}>{s.cta[0]}</Button></motion.div></motion.div></AnimatePresence>
+      <div className="mt-10 flex items-center gap-3">
+        {slides.map((_, k) => <button key={k} aria-label={`Slide ${k + 1}`} aria-current={k === i} onClick={() => setI(k)}
+          className={`h-2 rounded-full transition-all duration-500 ${k === i ? 'w-10 bg-lime' : 'w-2 bg-paper/50 hover:bg-paper'}`} />)}
+        </div>
+    </motion.div></section>;
 }
 
 export const Partners = () => (
